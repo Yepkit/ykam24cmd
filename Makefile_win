@@ -1,0 +1,35 @@
+CUR_PATH = $(CURDIR)
+OBJS = $(addprefix src/objs/,ykam24cmd.o commandParser.o usbcom.o ykemb.o string2val.o gpio.o)
+LIBS = -lhidapi
+LOADPATHS = -L$(CUR_PATH)/src/windows
+INCLUDEPATHS= -I$(CUR_PATH)/src/ -I$(CUR_PATH)/src/ykemb -I$(CUR_PATH)/src/utils -I$(CUR_PATH)/src/linux -I$(CUR_PATH)/src/io
+PREPROCESSOR_DEFS = -DLINUX
+CPP = g++
+
+ykam24cmd : $(OBJS)
+	$(CPP) $(LOADPATHS) -o bin/ykam24cmd.exe $(OBJS) $(LIBS)
+
+
+src/objs/ykam24cmd.o : src/ykam24cmd.cpp src/commandParser.h
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/ykam24cmd.cpp -o src/objs/ykam24cmd.o
+
+src/objs/commandParser.o : src/commandParser.cpp src/commandParser.h src/usbcom.h 
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/commandParser.cpp -o src/objs/commandParser.o
+
+src/objs/usbcom.o : src/usbcom.cpp src/linux/hidapi.h src/usbcom.h
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/usbcom.cpp -o src/objs/usbcom.o
+
+src/objs/ykemb.o : src/ykemb/ykemb.cpp src/ykemb/ykemb.h
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/ykemb/ykemb.cpp -o src/objs/ykemb.o
+
+
+src/objs/string2val.o : src/utils/string2val.cpp src/utils/string2val.h
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/utils/string2val.cpp -o src/objs/string2val.o
+
+src/objs/gpio.o : src/io/gpio.cpp src/io/gpio.h
+	$(CPP) $(PREPROCESSOR_DEFS) $(INCLUDEPATHS) -c src/io/gpio.cpp -o src/objs/gpio.o
+
+
+clean :
+	rm -f bin/ykam24cmd $(OBJS)
+
